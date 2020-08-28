@@ -53,7 +53,7 @@ function cdb_exec ($cmd, $fromCodeLocation='cdb_exec') {
     return $r;
 }
 
-function randomString ($length) {
+function cdb_randomString ($length) {
     $seed = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $r = '';
     for ($i=0; $i<$length; $i++) {

@@ -9,11 +9,11 @@ $calledFromApache = array_key_exists ('HTTP_HOST', $_SERVER);
 -- CONNECT TO A COUCHDB SERVER
 */
 $serverSettings = array (
-    'protocol' => 'http',
-    'server' => 'localhost',
+    'http' => 'http://',
+    'domain' => 'localhost',
     'port' => 5984,
-    'user' => 'admin',
-    'password' => 'texas.t33'
+    'adminUsername' => 'admin',
+    'adminPassword' => 'texas.t33'
 );
 $server = new couchdb_server ($serverSettings, $codeLocation);
 if (!cdb_processResults ($server, $codeLocation, is_object($server) && !is_null($server->address))) {
@@ -32,9 +32,12 @@ if (!cdb_processResults ($server, $codeLocation, is_object($server) && !is_null(
 */
 $call = array (
     'server' => $server,
-    'command' => '_all_dbs'
+    'cmd' => '_all_dbs'
 );
-$callResults = $server->makeCall ($call, $codeLocation);
+$data = array (
+    'cmd' => '_all_dbs'
+);
+$callResults = $server->makeCall ($call, null, $codeLocation);
 if (is_string($callResults)) {
     echo PHP_EOL.PHP_EOL.'<pre>'.PHP_EOL; var_dump ($callResults); echo PHP_EOL.'</pre>'.PHP_EOL.PHP_EOL;
 } else if (cdb_processResults ($callResults, $codeLocation,

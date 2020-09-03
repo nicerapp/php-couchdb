@@ -17,12 +17,21 @@ class couchdb_database {
         } else {
             $actualCodeLocation = $codeLocation;
         };
-        
-        $cmd = 'curl -s -X PUT -m 5 '
-            .$docSettings['server']->address
-            .$docSettings['dbName'].'/'
-            .$docSettings['id']
-            .' -d \''.json_encode($docSettings['data']).'\'';
+
+        if (array_key_exists('data', $docSettings) && is_string($docSettings['data']) && $docSettings['data']!=='') {
+            $cmd = 'curl -s -X PUT -m 5 '
+                .$docSettings['server']->address
+                .$docSettings['dbName'].'/'
+                .$docSettings['id']
+                .' -d \''.json_encode($docSettings['data']).'\'';
+        } elseif (array_key_exists('dataFilepath', $docSettings) && is_string($docSettings['dataFilepath']) && $docSettings['dataFilepath']!=='') {
+            $cmd = 'curl -s -X PUT -m 5 '
+                .$docSettings['server']->address
+                .$docSettings['dbName'].'/'
+                .$docSettings['id']
+                .' -d @"'.$docSettings['dataFilepath'].'"';
+        };
+        var_dump ($cmd);
         $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
         if (
             $ca['result']!==0

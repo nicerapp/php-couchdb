@@ -23,7 +23,7 @@ class couchdb_server {
         };
     }
     
-    public function makeCall ($callSettings, $fromCodeLocation='couchdb_server->makeCall') {
+    public function makeCall ($callSettings, $dataSettings, $fromCodeLocation='couchdb_server->makeCall') {
         $codeLocation = 'couchdb_server->makeCall';
         if ($fromCodeLocation!==$codeLocation) {
             $actualCodeLocation = $fromCodeLocation.'(...)--->'.$codeLocation;
@@ -31,7 +31,48 @@ class couchdb_server {
             $actualCodeLocation = $codeLocation;
         };
         
-        $cmd = 'curl -s -X GET -m 5 '.$callSettings['server']->address.'_all_dbs';
+        if (is_null($dataSettings)) {
+            $cmd = 'curl -s -X GET -m 5 '.$callSettings['server']->address.$callSettings['cmd'];
+        } else {
+            if (array_key_exists('httpMethod', $dataSettings) && $dataSettings['httpMethod']=='POST') {
+                $headers = '-H "Accept: application/json" -H "Content-Type: application/json" -H "Content-Length: '.strlen($dataSettings['data']).'" -X POST';
+            } else {
+                $headers = '-X GET';
+            };
+        
+            if (
+                (array_key_exists('dbName', $dataSettings) && is_string($dataSettings['dbName']) && $dataSettings['dbName']!=='')
+                && (array_key_exists('cmd', $dataSettings) && is_string($dataSettings['cmd']) && $dataSettings['cmd']!=='')
+                && (array_key_exists('dataFilepath', $dataSettings) && is_string($dataSettings['dataFilepath']) && $dataSettings['dataFilepath']!=='')
+            ) {
+                $cmd = 'curl -s '.$headers.' -m 5 -d @"'.$dataSettings['dataFilepath'].'" '.$callSettings['server']->address.$dataSettings['dbName'].'/'.$dataSettings['cmd'];
+            } elseif (
+                (array_key_exists('dbName', $dataSettings) && is_string($dataSettings['dbName']) && $dataSettings['dbName']!=='')
+                && (array_key_exists('cmd', $dataSettings) && is_string($dataSettings['cmd']) && $dataSettings['cmd']!=='')
+                && (array_key_exists('data', $dataSettings) && is_string($dataSettings['data']) && $dataSettings['data']!=='')
+            ) {
+                $cmd = 'curl -s '.$headers.' -m 5 --data \''.$dataSettings['data'].'\' '.$callSettings['server']->address.$dataSettings['dbName'].'/'.$dataSettings['cmd'];
+            } elseif (
+                (array_key_exists('dbName', $dataSettings) && is_string($dataSettings['dbName']) && $dataSettings['dbName']!=='')
+                && (array_key_exists('cmd', $dataSettings) && is_string($dataSettings['cmd']) && $dataSettings['cmd']!=='')
+            ) {
+                $cmd = 'curl -s '.$headers.' -m 5 '.$callSettings['server']->address.$dataSettings['dbName'].'/'.$dataSettings['cmd'];
+            } elseif (
+                (array_key_exists('dbName', $dataSettings) && is_string($dataSettings['dbName']) && $dataSettings['dbName']!=='')
+            ) {
+                $cmd = 'curl -s '.$headers.' -m 5 '.$callSettings['server']->address.$dataSettings['dbName'];
+            } else {
+                $r = array (
+                    'fromCodeLocation' => $actualCodeLocation,
+                    'status' => 'FAILED',
+                    'errorMessage' => 'invalid $dataSettings',
+                    '$dataSettings' => $dataSettings,
+                    'curl result' => $ca,                
+                ); $r1 = cdb_debug ($r, $actualCodeLocation);
+                return $r1;
+            };
+        };
+        //var_dump ($cmd); die();
         $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
         if (!is_array($ca)) {
             $r = array (
@@ -54,6 +95,7 @@ class couchdb_server {
             ); $r1 = cdb_debug ($r, $actualCodeLocation);
             return $r1;
         } else {
+            //var_dump ($ca); die();
             return json_decode($ca['output'][0], true);
         }
     }
@@ -77,32 +119,33 @@ class couchdb_server {
             return $r1;
         } else {
             // check if server settings even point to a valid couchdb server
-            if (!array_key_exists('server', $settings) || !is_string($settings['server']) || $settings['server']==='') {
+            //var_dump ('TEST1'); var_dump ($settings);
+            if (!array_key_exists('domain', $settings) || !is_string($settings['domain']) || $settings['domain']==='') {
                 $r = array (
                     'fromCodeLocation' => $actualCodeLocation,
                     'status' => 'FAILED',
-                    'errorMessage' => '$settings["server"] should be a string and a valid IP address or domain name for the couchdb server that you\'re trying to connect to'
+                    'errorMessage' => '$settings["domain"] should be a string and a valid IP address or domain name for the couchdb server that you\'re trying to connect to'
                 ); $r1 = cdb_debug ($r, $actualCodeLocation);
                 return $r1;
-            } elseif (!array_key_exists('port',$settings) || !is_int($settings['port']) || $settings['port']<0 || $settings['port']>65535) {
+            } elseif (!array_key_exists('port',$settings) || !is_numeric($settings['port']) || (int)$settings['port']<0 || (int)$settings['port']>65535) {
                 $r = array (
                     'fromCodeLocation' => $actualCodeLocation,
                     'status' => 'FAILED',
                     'errorMessage' => '$settings["port"] should be an integer between 0 and 65535, 5984 being the default for a couchdb server'
                 ); $r1 = cdb_debug ($r, $actualCodeLocation);
                 return $r1;
-            } elseif (!array_key_exists('user',$settings) || !is_string($settings['user']) || $settings['user']==='') {
+            } elseif (!array_key_exists('adminUsername',$settings) || !is_string($settings['adminUsername']) || $settings['adminUsername']==='') {
                 $r = array (
                     'fromCodeLocation' => $actualCodeLocation,
                     'status' => 'FAILED',
-                    'errorMessage' => '$settings["user"] should be a string and a valid couchdb user-id for '.$settings["server"].':'.$settings["port"]
+                    'errorMessage' => '$settings["adminUsername"] should be a string and a valid couchdb user-id for '.$settings["domain"].':'.$settings["port"]
                 ); $r1 = cdb_debug ($r, $actualCodeLocation);
                 return $r1;
-            } elseif (!array_key_exists('password',$settings) || !is_string($settings['password']) || $settings['password']==='') {
+            } elseif (!array_key_exists('adminPassword',$settings) || !is_string($settings['adminPassword']) || $settings['adminPassword']==='') {
                 $r = array (
                     'froexit();mCodeLocation' => $actualCodeLocation,
                     'status' => 'FAILED',
-                    'errorMessage' => '$settings["password"] should be a string and a valid couchdb password for user-id '.$settings["user"].' on server '.$settings["server"].':'.$settings["port"]
+                    'errorMessage' => '$settings["adminPassword"] should be a string and a valid couchdb password for user-id '.$settings["adminUsername"].' on server '.$settings["domain"].':'.$settings["port"]
                 ); $r1 = cdb_debug ($r, $actualCodeLocation);
                 return $r1;
             } else {
@@ -120,6 +163,9 @@ class couchdb_server {
         };
         $cmd = 'curl -s -X GET -m 5 '.$this->constructCouchAdress($settings, $actualCodeLocation);
         $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
+        //var_dump ($cmd);
+        //var_dump ($ca);
+        //die();
         if (!is_array ($ca)) {
             $r = array (
                 'fromCodeLocation' => $actualCodeLocation,
@@ -171,7 +217,7 @@ class couchdb_server {
         };
         $check = $this->checkSettings ($settings, $actualCodeLocation);
         if ($check==='OK') {
-            $r = $settings['protocol'].'://'.$settings['user'].':'.$settings['password'].'@'.$settings['server'].':'.$settings['port'].'/';
+            $r = $settings['http'].$settings['adminUsername'].':'.$settings['adminPassword'].'@'.$settings['domain'].':'.$settings['port'].'/';
             return $r;
         } else {
             $r = array (
@@ -216,6 +262,7 @@ class couchdb_server {
             $this->settings = $dbSettings;
             if ($dbSettings['createIfNotExists']===true) $httpMethod='PUT'; else $httpMethod='GET';
             $cmd = 'curl -s -X '.$httpMethod.' '.$dbSettings['server']->address.$dbSettings['dbName'];
+            //var_dump ($cmd); die();
             $cr = cdb_exec($cmd, $actualCodeLocation);
             if (
                 strpos($cr['output'][0],'"error"')!==false

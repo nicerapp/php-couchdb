@@ -31,7 +31,7 @@ class couchdb_database {
                 .$docSettings['id']
                 .' -d @"'.$docSettings['dataFilepath'].'"';
         };
-        var_dump ($cmd);
+        //var_dump ($cmd);
         $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
         if (
             $ca['result']!==0
@@ -78,9 +78,9 @@ class couchdb_database {
                 'curl output' => $ca['output']
             ); $r1 = cdb_debug ($r, $actualCodeLocation);
             return $r1;
-        } else {
+        } /*else {
             return json_decode($ca['output'][0], true);
-        }
+        }*/
         
         $doc = new couchdb_document ($docSettings);
         return $doc;    

@@ -163,9 +163,9 @@ class couchdb_server {
         };
         $cmd = 'curl -s -k -X GET -m 5 '.$this->constructCouchAdress($settings, $actualCodeLocation);
         $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
-        var_dump ($cmd);
-        var_dump ($ca);
-        die();
+        //var_dump ($cmd);
+        //var_dump ($ca);
+        //die();
         if (!is_array ($ca)) {
             $r = array (
                 'fromCodeLocation' => $actualCodeLocation,

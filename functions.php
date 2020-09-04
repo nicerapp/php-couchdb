@@ -1,6 +1,6 @@
 <?php 
 function cdb_debug ($dbg, $fromCodeLocation='cdb_debug') {
-    /*
+    
     if (is_array($dbg) && array_key_exists('result', $dbg) && $dbg['result']===0) {
         return $dbg;    
     } else {
@@ -11,7 +11,7 @@ function cdb_debug ($dbg, $fromCodeLocation='cdb_debug') {
             echo '</pre>';
         }
         return $dbg;
-    }*/
+    }
     return $dbg;
 }
 

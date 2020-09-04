@@ -32,7 +32,7 @@ class couchdb_server {
         };
         
         if (is_null($dataSettings)) {
-            $cmd = 'curl -s -X GET -m 5 '.$callSettings['server']->address.$callSettings['cmd'];
+            $cmd = 'curl -s -k -X GET -m 5 '.$callSettings['server']->address.$callSettings['cmd'];
         } else {
             if (array_key_exists('httpMethod', $dataSettings) && $dataSettings['httpMethod']=='POST') {
                 $headers = '-H "Accept: application/json" -H "Content-Type: application/json" -H "Content-Length: '.strlen($dataSettings['data']).'" -X POST';
@@ -45,22 +45,22 @@ class couchdb_server {
                 && (array_key_exists('cmd', $dataSettings) && is_string($dataSettings['cmd']) && $dataSettings['cmd']!=='')
                 && (array_key_exists('dataFilepath', $dataSettings) && is_string($dataSettings['dataFilepath']) && $dataSettings['dataFilepath']!=='')
             ) {
-                $cmd = 'curl -s '.$headers.' -m 5 -d @"'.$dataSettings['dataFilepath'].'" '.$callSettings['server']->address.$dataSettings['dbName'].'/'.$dataSettings['cmd'];
+                $cmd = 'curl -s -k '.$headers.' -m 5 -d @"'.$dataSettings['dataFilepath'].'" '.$callSettings['server']->address.$dataSettings['dbName'].'/'.$dataSettings['cmd'];
             } elseif (
                 (array_key_exists('dbName', $dataSettings) && is_string($dataSettings['dbName']) && $dataSettings['dbName']!=='')
                 && (array_key_exists('cmd', $dataSettings) && is_string($dataSettings['cmd']) && $dataSettings['cmd']!=='')
                 && (array_key_exists('data', $dataSettings) && is_string($dataSettings['data']) && $dataSettings['data']!=='')
             ) {
-                $cmd = 'curl -s '.$headers.' -m 5 --data \''.$dataSettings['data'].'\' '.$callSettings['server']->address.$dataSettings['dbName'].'/'.$dataSettings['cmd'];
+                $cmd = 'curl -s -k '.$headers.' -m 5 --data \''.$dataSettings['data'].'\' '.$callSettings['server']->address.$dataSettings['dbName'].'/'.$dataSettings['cmd'];
             } elseif (
                 (array_key_exists('dbName', $dataSettings) && is_string($dataSettings['dbName']) && $dataSettings['dbName']!=='')
                 && (array_key_exists('cmd', $dataSettings) && is_string($dataSettings['cmd']) && $dataSettings['cmd']!=='')
             ) {
-                $cmd = 'curl -s '.$headers.' -m 5 '.$callSettings['server']->address.$dataSettings['dbName'].'/'.$dataSettings['cmd'];
+                $cmd = 'curl -s -k '.$headers.' -m 5 '.$callSettings['server']->address.$dataSettings['dbName'].'/'.$dataSettings['cmd'];
             } elseif (
                 (array_key_exists('dbName', $dataSettings) && is_string($dataSettings['dbName']) && $dataSettings['dbName']!=='')
             ) {
-                $cmd = 'curl -s '.$headers.' -m 5 '.$callSettings['server']->address.$dataSettings['dbName'];
+                $cmd = 'curl -s -k '.$headers.' -m 5 '.$callSettings['server']->address.$dataSettings['dbName'];
             } else {
                 $r = array (
                     'fromCodeLocation' => $actualCodeLocation,
@@ -161,11 +161,11 @@ class couchdb_server {
         } else {
             $actualCodeLocation = $codeLocation;
         };
-        $cmd = 'curl -s -X GET -m 5 '.$this->constructCouchAdress($settings, $actualCodeLocation);
+        $cmd = 'curl -s -k -X GET -m 5 '.$this->constructCouchAdress($settings, $actualCodeLocation);
         $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
-        //var_dump ($cmd);
-        //var_dump ($ca);
-        //die();
+        var_dump ($cmd);
+        var_dump ($ca);
+        die();
         if (!is_array ($ca)) {
             $r = array (
                 'fromCodeLocation' => $actualCodeLocation,
@@ -261,7 +261,7 @@ class couchdb_server {
         } else {
             $this->settings = $dbSettings;
             if ($dbSettings['createIfNotExists']===true) $httpMethod='PUT'; else $httpMethod='GET';
-            $cmd = 'curl -s -X '.$httpMethod.' '.$dbSettings['server']->address.$dbSettings['dbName'];
+            $cmd = 'curl -s -k -X '.$httpMethod.' '.$dbSettings['server']->address.$dbSettings['dbName'];
             //var_dump ($cmd); die();
             $cr = cdb_exec($cmd, $actualCodeLocation);
             if (

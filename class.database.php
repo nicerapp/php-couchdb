@@ -19,13 +19,13 @@ class couchdb_database {
         };
 
         if (array_key_exists('data', $docSettings) && is_string($docSettings['data']) && $docSettings['data']!=='') {
-            $cmd = 'curl -s -X PUT -m 5 '
+            $cmd = 'curl -s -k -X PUT -m 5 '
                 .$docSettings['server']->address
                 .$docSettings['dbName'].'/'
                 .$docSettings['id']
                 .' -d \''.json_encode($docSettings['data']).'\'';
         } elseif (array_key_exists('dataFilepath', $docSettings) && is_string($docSettings['dataFilepath']) && $docSettings['dataFilepath']!=='') {
-            $cmd = 'curl -s -X PUT -m 5 '
+            $cmd = 'curl -s -k -X PUT -m 5 '
                 .$docSettings['server']->address
                 .$docSettings['dbName'].'/'
                 .$docSettings['id']
@@ -61,7 +61,7 @@ class couchdb_database {
             $actualCodeLocation = $codeLocation;
         };
         
-        $cmd = 'curl -s -X GET -m 5 '
+        $cmd = 'curl -s -k -X GET -m 5 '
             .$docSettings['server']->address
             .$docSettings['dbName'].'/'
             .$docSettings['id'].' -d \'{"id":'.$docSettings['id'].'}\'';
@@ -96,7 +96,7 @@ class couchdb_database {
             $actualCodeLocation = $codeLocation;
         };
         
-        $cmd = 'curl -s -X PUT -m 5 '
+        $cmd = 'curl -s -k -X PUT -m 5 '
             .$docSettings['server']->address
             .$docSettings['dbName'].'/'
             .$docSettings['id']

@@ -53,7 +53,7 @@ class couchdb_database {
         return $doc;    
     }
     
-    public function getDoc ($docSettings=null, $fromCodeLocation='couchdb_database->createDoc') {
+    public function getDoc ($docSettings=null, $fromCodeLocation='couchdb_database->getDoc') {
         $codeLocation = 'couchdb_database->getDoc';
         if ($fromCodeLocation!==$codeLocation) {
             $actualCodeLocation = $fromCodeLocation.'(...)--->'.$codeLocation;
@@ -86,7 +86,48 @@ class couchdb_database {
         return $doc;    
     }
 
-    
+    public function getAllDocs ($docSettings, $fromCodeLocation='couchdb_database->getAllDocs') {
+        $codeLocation = 'couchdb_database->getAllDocs';
+        if ($fromCodeLocation!==$codeLocation) {
+            $actualCodeLocation = $fromCodeLocation.'(...)--->'.$codeLocation;
+        } else {
+            $actualCodeLocation = $codeLocation;
+        };
+        
+        $cmd = 'curl -s -k -X GET -m 5 '
+            .$docSettings['server']->address
+            .$docSettings['dbName'].'/_all_docs';
+        $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
+        if (
+            $ca['result']!==0
+            || strpos($ca['output'][0],'"error":')!==false
+        ) {
+            $r = array (
+                'fromCodeLocation' => $actualCodeLocation,
+                'status' => 'FAILED',
+                'errorMessage' => 'invalid $callSettings',
+                'curl result' => $ca['result'],
+                'curl output' => $ca['output']
+            ); $r1 = cdb_debug ($r, $actualCodeLocation);
+            return $r1;
+        } /*else {
+            return json_decode($ca['output'][0], true);
+        }*/
+        
+        $data = implode($ca['output']);
+        $data = json_decode($data, true);
+        
+        //var_dump ($data); die();
+        
+        
+        $r = array();
+        foreach($data['rows'] as $idx->$row) {
+            $doc = new couchdb_document($row);
+            $r[] = $doc;
+        }
+        
+        return $r;    
+    }
     
     public function updateDoc ($docSettings=null, $fromCodeLocation='couchdb_database->createDoc') {
         $codeLocation = 'couchdb_database->updateDoc';
@@ -121,6 +162,36 @@ class couchdb_database {
         $doc = new couchdb_document ($docSettings);
         return $doc;    
     }
-    
+
+    public function deleteDoc ($docSettings = null, $fromCodeLocation='couchdb_database->deleteDoc') {
+        $codeLocation = 'couchdb_database->deleteDoc';
+        if ($fromCodeLocation!==$codeLocation) {
+            $actualCodeLocation = $fromCodeLocation.'(...)--->'.$codeLocation;
+        } else {
+            $actualCodeLocation = $codeLocation;
+        };
+        
+        $cmd = 'curl -s -k -X DELETE -m 5 '
+            .$docSettings['server']->address
+            .$docSettings['dbName'].'/'
+            .$docSettings['id']
+            .'?rev='.$docSettings['value']['_rev'];
+        $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
+        if (
+            $ca['result']!==0
+            || strpos($ca['output'][0],'"error":')!==false
+        ) {
+            $r = array (
+                'fromCodeLocation' => $actualCodeLocation,
+                'status' => 'FAILED',
+                'errorMessage' => 'invalid $callSettings',
+                'curl result' => $ca['result'],
+                'curl output' => $ca['output']
+            ); $r1 = cdb_debug ($r, $actualCodeLocation);
+            return $r1;
+        } else {
+            return json_decode($ca['output'][0], true);
+        }
+    }
 }
 ?>

@@ -228,10 +228,6 @@ class couchdb_server {
             return $r;
         }
     }
-
-    
-
-    
     
     public function connectToDB ($dbSettings, $fromCodeLocation='couchdb_server->connectToDB') {
         $codeLocation = 'couchdb_server->connectToDB';

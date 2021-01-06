@@ -20,9 +20,9 @@ class couchdb_database {
 //var_dump ($docSettings);// die();
 
         $data = $docSettings['data'];
-        $data = str_replace('!', '\!', $data);
+        $data = json_encode($data);/*str_replace('!', '\!', $data);
         $data = str_replace('(', '\(', $data);
-        $data = str_replace(')', '\)', $data);
+        $data = str_replace(')', '\)', $data);*/
 
         if (array_key_exists('data', $docSettings) && is_string($docSettings['data']) && $docSettings['data']!=='') {
             $cmd = 'curl -s -k -X PUT -m 5 '

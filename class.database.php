@@ -80,6 +80,7 @@ class couchdb_database {
             ); $r1 = cdb_debug ($r, $actualCodeLocation);
             return $r1;
         } else {
+            file_put_contents ('/home/rene/data1/htdocs/nicer.app/t.json', $ca['output']);
             return json_decode($ca['output'][0], true);
         }
         

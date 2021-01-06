@@ -17,14 +17,18 @@ class couchdb_database {
         } else {
             $actualCodeLocation = $codeLocation;
         };
-var_dump ($docSettings);// die();
+//var_dump ($docSettings);// die();
+
+        $data = $docSettings['data'];
+        $data = str_replace('!', '\!', $data);
+
         if (array_key_exists('data', $docSettings) && is_string($docSettings['data']) && $docSettings['data']!=='') {
             $cmd = 'curl -s -k -X PUT -m 5 '
                 .$docSettings['server']->address
                 .$docSettings['dbName'].'/'
                 .$docSettings['id']
-                .' -d \''.$docSettings['data'].'\'';
-                echo json_encode(file_put_contents ('/home/rene/data1/htdocs/nicer.app/t.sh', $cmd));
+                .' -d \''.$data.'\'';
+                echo json_encode(file_put_contents ('/home/rene/data1/htdocs/nicer.app/t.sh', $cmd))    ;
         } elseif (array_key_exists('dataFilepath', $docSettings) && is_string($docSettings['dataFilepath']) && $docSettings['dataFilepath']!=='') {
             $cmd = 'curl -s -k -X PUT -m 5 '
                 .$docSettings['server']->address

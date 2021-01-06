@@ -79,9 +79,9 @@ class couchdb_database {
                 'curl output' => $ca['output']
             ); $r1 = cdb_debug ($r, $actualCodeLocation);
             return $r1;
-        } /*else {
+        } else {
             return json_decode($ca['output'][0], true);
-        }*/
+        }
         
         $doc = new couchdb_document ($docSettings);
         return $doc;    
@@ -111,7 +111,7 @@ class couchdb_database {
                 'curl output' => $ca['output']
             ); $r1 = cdb_debug ($r, $actualCodeLocation);
             return $r1;
-        } /*else {
+        }/* else {
             return json_decode($ca['output'][0], true);
         }*/
         

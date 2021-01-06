@@ -117,7 +117,7 @@ class couchdb_database {
         $data = implode($ca['output']);
         $data = json_decode($data, true);
         
-        //var_dump ($data); die();
+        var_dump ($data); die();
         
         
         $r = array();

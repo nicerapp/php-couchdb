@@ -63,7 +63,7 @@ class couchdb_database {
         
         $cmd = 'curl -s -k -X GET -m 5 '
             .$docSettings['server']->address
-            .$docSettings['dbName'].'/'
+            .str_replace(' ', '%20', $docSettings['dbName']).'/'
             .$docSettings['id'].' -d \'{"id":"'.$docSettings['id'].'"}\'';
         $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
         if (

@@ -17,7 +17,7 @@ class couchdb_database {
         } else {
             $actualCodeLocation = $codeLocation;
         };
-var_dump ($docSettings); die();
+var_dump ($docSettings);// die();
         if (array_key_exists('data', $docSettings) && is_string($docSettings['data']) && $docSettings['data']!=='') {
             $cmd = 'curl -s -k -X PUT -m 5 '
                 .$docSettings['server']->address

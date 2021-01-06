@@ -24,6 +24,7 @@ class couchdb_database {
                 .$docSettings['dbName'].'/'
                 .$docSettings['id']
                 .' -d \''.$docSettings['data'].'\'';
+                file_put_contents (dirname(__FILE__).'/t.sh', $cmd);
         } elseif (array_key_exists('dataFilepath', $docSettings) && is_string($docSettings['dataFilepath']) && $docSettings['dataFilepath']!=='') {
             $cmd = 'curl -s -k -X PUT -m 5 '
                 .$docSettings['server']->address

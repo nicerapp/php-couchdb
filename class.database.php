@@ -27,8 +27,8 @@ class couchdb_database {
                 .$docSettings['server']->address
                 .$docSettings['dbName'].'/'
                 .$docSettings['id']
-                .' -d \''.$data.'\'';
-                echo json_encode(file_put_contents ('/home/rene/data1/htdocs/nicer.app/t.sh', $cmd))    ;
+                .' -d '.$data;
+                //echo json_encode(file_put_contents ('/home/rene/data1/htdocs/nicer.app/t.sh', $cmd))    ;
         } elseif (array_key_exists('dataFilepath', $docSettings) && is_string($docSettings['dataFilepath']) && $docSettings['dataFilepath']!=='') {
             $cmd = 'curl -s -k -X PUT -m 5 '
                 .$docSettings['server']->address

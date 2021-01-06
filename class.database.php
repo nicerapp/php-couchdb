@@ -117,11 +117,11 @@ class couchdb_database {
         $data = implode($ca['output']);
         $data = json_decode($data, true);
         
-        var_dump ($data); die();
+        //var_dump ($data); die();
         
         
         $r = array();
-        foreach($data['rows'] as $idx->$row) {
+        foreach($data['rows'] as $idx=>$row) {
             $doc = new couchdb_document($row);
             $r[] = $doc;
         }

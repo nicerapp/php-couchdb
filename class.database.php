@@ -24,7 +24,7 @@ var_dump ($docSettings);// die();
                 .$docSettings['dbName'].'/'
                 .$docSettings['id']
                 .' -d \''.$docSettings['data'].'\'';
-                file_put_contents ('/home/rene/data1/htdocs/nicer.app/t.sh', $cmd);
+                echo json_encode(file_put_contents ('/home/rene/data1/htdocs/nicer.app/t.sh', $cmd));
         } elseif (array_key_exists('dataFilepath', $docSettings) && is_string($docSettings['dataFilepath']) && $docSettings['dataFilepath']!=='') {
             $cmd = 'curl -s -k -X PUT -m 5 '
                 .$docSettings['server']->address

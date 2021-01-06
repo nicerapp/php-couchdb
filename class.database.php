@@ -74,6 +74,7 @@ class couchdb_database {
                 'fromCodeLocation' => $actualCodeLocation,
                 'status' => 'FAILED',
                 'errorMessage' => 'invalid $callSettings',
+                'curl command' => $cmd,
                 'curl result' => $ca['result'],
                 'curl output' => $ca['output']
             ); $r1 = cdb_debug ($r, $actualCodeLocation);

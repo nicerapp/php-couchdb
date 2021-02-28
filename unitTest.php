@@ -70,6 +70,45 @@ if (cdb_processResults ($db, $codeLocation, is_object($db) && $db instanceof cou
     }
 }
 
+
+
+$security = Array(
+    'members'=>Array(
+        'roles'=>Array('guests')
+    ),
+    'admins'=>Array(
+        'roles'=>Array('guests')
+    )
+);
+$cmd = array (
+    'server' => $server,
+    'dbName' => $dbSettings['dbName'],
+    '_security' => $security
+);
+$doc = $db->putSecurity ($cmd);
+if (cdb_processResults ($doc, $codeLocation, is_array($doc))) {
+    if ($calledFromApache) {
+        echo PHP_EOL.'<h2>Added security settings to database</h2>'.PHP_EOL;
+    } else {
+        echo PHP_EOL.'Added security settings to database'.PHP_EOL;
+    }
+}
+
+$cmd = array (
+    'server' => $server,
+    'dbName' => $dbSettings['dbName']
+);
+$doc = $db->getSecurity ($cmd);
+if (cdb_processResults ($doc, $codeLocation, is_array($doc))) {
+    if ($calledFromApache) {
+        echo PHP_EOL.'<h2>Fetching security settings to database</h2>'.PHP_EOL;
+        echo PHP_EOL.'<pre style="background:green;color:yellow;">'; var_dump ($doc); echo '</pre>'.PHP_EOL.PHP_EOL;
+    } else {
+        echo PHP_EOL.'Fetching security settings to database'.PHP_EOL;
+        var_dump ($doc); echo PHP_EOL.PHP_EOL;
+    }
+}
+
 /* 
 -- CREATE A DOCUMENT IN DATABASE 'test'
 */

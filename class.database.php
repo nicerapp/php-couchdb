@@ -224,7 +224,7 @@ class couchdb_database {
             $cmd = 'curl -s -k -X POST -m 5 -H "Accept: application/json" -H "Content-Type: application/json" '
                 .$findCmd['server']->address
                 .$findCmd['dbName'].'/_find'
-                .' -d @"'.$findCmd['dataFilepath'].'"';
+                .' -d @"'.$findCmd['findFilepath'].'"';
         };
         //var_dump ($cmd);
         $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
@@ -246,5 +246,82 @@ class couchdb_database {
         }
     }
     
+    
+    public function getSecurity ($cmd = null, $fromCodeLocation='couchdb_database->find') {
+        $codeLocation = 'couchdb_database->find';
+        if ($fromCodeLocation!==$codeLocation) {
+            $actualCodeLocation = $fromCodeLocation.'(...)--->'.$codeLocation;
+        } else {
+            $actualCodeLocation = $codeLocation;
+        };
+        
+        $data = json_encode($cmd['_security']);
+        $data = escapeshellarg($data);
+        //echo '<pre style="color:orange;">';var_dump ($findCmd);echo '</pre>';
+        $xec = 'curl -s -k -X GET -m 5 -H "Accept: application/json" -H "Content-Type: application/json" '
+            .$cmd['server']->address
+            .$cmd['dbName'].'/_security';
+        //var_dump ($xec);
+        $ca = cdb_exec ($xec, $actualCodeLocation); // $ca = $connectionAttempt
+        if (
+            $ca['result']!==0
+            || strpos($ca['output'][0],'"error":')!==false
+        ) {
+            $r = array (
+                'fromCodeLocation' => $actualCodeLocation,
+                'status' => 'FAILED',
+                'errorMessage' => 'invalid $callSettings',
+                'curl result' => $ca['result'],
+                'curl output' => $ca['output']
+            ); $r1 = cdb_debug ($r, $actualCodeLocation);
+            return $r1;
+        } else {
+            //echo '<pre style="color:orange;">';var_dump ($ca);echo '</pre>';
+            return json_decode(implode('',$ca['output']), true);
+        }
+    }
+    
+    public function putSecurity ($cmd = null, $fromCodeLocation='couchdb_database->find') {
+        $codeLocation = 'couchdb_database->find';
+        if ($fromCodeLocation!==$codeLocation) {
+            $actualCodeLocation = $fromCodeLocation.'(...)--->'.$codeLocation;
+        } else {
+            $actualCodeLocation = $codeLocation;
+        };
+        
+        $data = json_encode($cmd['_security']);
+        $data = escapeshellarg($data);
+        //echo '<pre style="color:orange;">';var_dump ($findCmd);echo '</pre>';
+        if (array_key_exists('_security', $cmd)) {
+            $xec = 'curl -s -k -X PUT -m 5 -H "Accept: application/json" -H "Content-Type: application/json" '
+                .$cmd['server']->address
+                .$cmd['dbName'].'/_security'
+                .' -d '.$data;
+                //echo json_encode(file_put_contents ('/home/rene/data1/htdocs/nicer.app/t.sh', $cmd))    ;
+        } elseif (array_key_exists('_securityFilepath', $findCmd) && is_string($findCmd['_securityFilepath']) && $findCmd['_securityFilepath']!=='') {
+            $xec = 'curl -s -k -X PUT -m 5 -H "Accept: application/json" -H "Content-Type: application/json" '
+                .$cmd['server']->address
+                .$cmd['dbName'].'/_security'
+                .' -d @"'.$cmd['findFilepath'].'"';
+        };
+        //var_dump ($xec);
+        $ca = cdb_exec ($xec, $actualCodeLocation); // $ca = $connectionAttempt
+        if (
+            $ca['result']!==0
+            || strpos($ca['output'][0],'"error":')!==false
+        ) {
+            $r = array (
+                'fromCodeLocation' => $actualCodeLocation,
+                'status' => 'FAILED',
+                'errorMessage' => 'invalid $callSettings',
+                'curl result' => $ca['result'],
+                'curl output' => $ca['output']
+            ); $r1 = cdb_debug ($r, $actualCodeLocation);
+            return $r1;
+        } else {
+            //echo '<pre style="color:orange;">';var_dump ($ca);echo '</pre>';
+            return json_decode(implode('',$ca['output']), true);
+        }
+    }
 }
 ?>

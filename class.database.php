@@ -10,6 +10,39 @@ class couchdb_database {
         
     }
     
+    public function delete ($settings=null, $fromCodeLocation='couchdb_database->delete') {
+        $codeLocation = 'couchdb_database->delete';
+        if ($fromCodeLocation!==$codeLocation) {
+            $actualCodeLocation = $fromCodeLocation.'(...)--->'.$codeLocation;
+        } else {
+            $actualCodeLocation = $codeLocation;
+        };
+        
+        $xec = 'curl -s -k -X DELETE '
+            .$settings['server']->address
+            .$settings['dbName'];
+        var_dump ($xec);
+        $ca = cdb_exec ($xec, $actualCodeLocation); // $ca = $connectionAttempt
+        echo '<pre>'; var_dump ($ca);
+        if (
+            $ca['result']!==0
+            || strpos($ca['output'][0],'"error":')!==false
+        ) {
+            $r = array (
+                'fromCodeLocation' => $actualCodeLocation,
+                'status' => 'FAILED',
+                'errorMessage' => 'invalid $callSettings',
+                'cmd' => $cmd,
+                'curl result' => $ca['result'],
+                'curl output' => $ca['output']
+            ); $r1 = cdb_debug ($r, $actualCodeLocation);
+            return $r1;
+        } else {
+            return json_decode(implode('',$ca['output']), true);
+        }
+            
+    }
+    
     public function createDoc ($docSettings=null, $fromCodeLocation='couchdb_database->createDoc') {
         $codeLocation = 'couchdb_database->createDoc';
         if ($fromCodeLocation!==$codeLocation) {

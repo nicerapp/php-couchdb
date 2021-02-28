@@ -62,7 +62,7 @@ $dbSettings = array (
     'createIfNotExists' => true
 );
 $db = $server->connectToDB ($dbSettings, $codeLocation); // this call will succeed regardless whether or not the database already exists.
-if (cdb_processResults ($db, $codeLocation, is_object($db) && $db instanceof couchdb_document)) {
+if (cdb_processResults ($db, $codeLocation, is_object($db) && $db instanceof couchdb_database)) {
     if ($calledFromApache) {
         echo PHP_EOL.'<h2>Created database "test_phpcouchdb"</h2>'.PHP_EOL;
     } else {

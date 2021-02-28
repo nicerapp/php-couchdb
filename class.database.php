@@ -19,10 +19,10 @@ class couchdb_database {
         };
 //var_dump ($docSettings);// die();
 
-        $data = $docSettings['data'];
+        $data = json_encode($docSettings['data']);
         $data = escapeshellarg($data);
         
-        if (array_key_exists('data', $docSettings) && is_string($docSettings['data']) && $docSettings['data']!=='') {
+        if (array_key_exists('data', $docSettings)) {
             $cmd = 'curl -s -k -X PUT -m 5 '
                 .$docSettings['server']->address
                 .$docSettings['dbName'].'/'
@@ -150,6 +150,7 @@ class couchdb_database {
             .$docSettings['dbName'].'/'
             .$docSettings['id']
             .' -d \''.json_encode($docSettings['data']).'\'';
+        //var_dump ($cmd);
         $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
         if (
             $ca['result']!==0
@@ -201,5 +202,49 @@ class couchdb_database {
             return json_decode($ca['output'][0], true);
         }
     }
+
+    public function find ($findCmd = null, $fromCodeLocation='couchdb_database->find') {
+        $codeLocation = 'couchdb_database->find';
+        if ($fromCodeLocation!==$codeLocation) {
+            $actualCodeLocation = $fromCodeLocation.'(...)--->'.$codeLocation;
+        } else {
+            $actualCodeLocation = $codeLocation;
+        };
+        
+        $data = json_encode($findCmd['_find']);
+        $data = escapeshellarg($data);
+        //echo '<pre style="color:orange;">';var_dump ($findCmd);echo '</pre>';
+        if (array_key_exists('_find', $findCmd)) {
+            $cmd = 'curl -s -k -X POST -m 5 -H "Accept: application/json" -H "Content-Type: application/json" '
+                .$findCmd['server']->address
+                .$findCmd['dbName'].'/_find'
+                .' -d '.$data;
+                //echo json_encode(file_put_contents ('/home/rene/data1/htdocs/nicer.app/t.sh', $cmd))    ;
+        } elseif (array_key_exists('_findFilepath', $findCmd) && is_string($findCmd['_findFilepath']) && $findCmd['_findFilepath']!=='') {
+            $cmd = 'curl -s -k -X POST -m 5 -H "Accept: application/json" -H "Content-Type: application/json" '
+                .$findCmd['server']->address
+                .$findCmd['dbName'].'/_find'
+                .' -d @"'.$findCmd['dataFilepath'].'"';
+        };
+        //var_dump ($cmd);
+        $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
+        if (
+            $ca['result']!==0
+            || strpos($ca['output'][0],'"error":')!==false
+        ) {
+            $r = array (
+                'fromCodeLocation' => $actualCodeLocation,
+                'status' => 'FAILED',
+                'errorMessage' => 'invalid $callSettings',
+                'curl result' => $ca['result'],
+                'curl output' => $ca['output']
+            ); $r1 = cdb_debug ($r, $actualCodeLocation);
+            return $r1;
+        } else {
+            //echo '<pre style="color:orange;">';var_dump ($ca);echo '</pre>';
+            return json_decode(implode('',$ca['output']), true);
+        }
+    }
+    
 }
 ?>

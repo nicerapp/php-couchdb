@@ -21,9 +21,9 @@ class couchdb_database {
         $xec = 'curl -s -k -X DELETE '
             .$settings['server']->address
             .$settings['dbName'];
-        var_dump ($xec);
+        //var_dump ($xec);
         $ca = cdb_exec ($xec, $actualCodeLocation); // $ca = $connectionAttempt
-        echo '<pre>'; var_dump ($ca);
+        //echo '<pre>'; var_dump ($ca);
         if (
             $ca['result']!==0
             || strpos($ca['output'][0],'"error":')!==false

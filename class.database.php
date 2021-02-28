@@ -36,9 +36,11 @@ class couchdb_database {
                 'curl result' => $ca['result'],
                 'curl output' => $ca['output']
             ); $r1 = cdb_debug ($r, $actualCodeLocation);
-            return $r1;
+            //return $r1;
+            return false;
         } else {
-            return json_decode(implode('',$ca['output']), true);
+            //$r = json_decode(implode('',$ca['output']), true);
+            return true;
         }
             
     }

@@ -187,6 +187,7 @@ class couchdb_database {
             .' -d \''.json_encode($docSettings['data']).'\'';
         var_dump ($cmd);
         $ca = cdb_exec ($cmd, $actualCodeLocation); // $ca = $connectionAttempt
+        echo '<pre style="color:darkgreen">'; var_dump ($ca); echo '</pre>';
         if (
             $ca['result']!==0
             || strpos($ca['output'][0],'"error":')!==false
@@ -200,7 +201,7 @@ class couchdb_database {
             ); $r1 = cdb_debug ($r, $actualCodeLocation);
             return $r1;
         } else {
-            echo '<pre style="color:darkgreen">'; var_dump ($ca); echo '</pre>';
+            
             return json_decode($ca['output'][0], true);
         }
         
